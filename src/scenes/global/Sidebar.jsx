@@ -40,6 +40,12 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  let role = null;
+  try {
+    role = JSON.parse(localStorage.getItem("user"))?.role || null;
+  } catch (e) {
+    role = null;
+  }
 
   return (
     <Box
@@ -93,10 +99,10 @@ const Sidebar = () => {
             <Box mb="25px">
               <Box display="flex" justifyContent="center" alignItems="center">
                 <img
-                  alt="profile-user"
+                  alt="logo-attawfik"
                   width="100px"
                   height="100px"
-                  src={`../../assets/logoAttwfik.jpg`}
+                  src={`/assets/logoAttwfik.jpg`}
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
               </Box>
@@ -131,6 +137,15 @@ const Sidebar = () => {
               Pages
             </Typography>
            
+            {role === "admin" && (
+              <Item
+                title="Admin"
+                to="/dashboard"
+                icon={<HomeOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            )}
             <Item
               title="Calendar"
               to="/calendar"
@@ -145,6 +160,50 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
+
+            <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              Espaces
+            </Typography>
+            {role === "manager" && (
+              <Item
+                title="Manager"
+                to="/manager"
+                icon={<PeopleOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            )}
+            {role === "leader" && (
+              <Item
+                title="Leader"
+                to="/leader"
+                icon={<ContactsOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            )}
+            {role === "developer" && (
+              <Item
+                title="Developer"
+                to="/developer"
+                icon={<PersonOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            )}
+            {role === "user" && (
+              <Item
+                title="Mon espace"
+                to="/me"
+                icon={<PersonOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            )}
 
          
           </Box>

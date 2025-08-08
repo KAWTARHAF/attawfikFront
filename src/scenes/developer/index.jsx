@@ -14,6 +14,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Timeline } from "@mui/icons-material";
+import { ResponsiveBar } from "@nivo/bar";
 
 const DeveloperDashboard = () => {
   const theme = useTheme();
@@ -66,6 +67,35 @@ const DeveloperDashboard = () => {
       <Typography variant="h4" gutterBottom>
         Projets Assignés - Développeur
       </Typography>
+
+      <Grid container spacing={3} sx={{ mb: 2 }}>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={4} sx={{ p: 2, borderRadius: 2, height: "100%" }}>
+            <Typography variant="h6" mb={1}>Logs de prédiction (mock)</Typography>
+            <Box sx={{ maxHeight: 200, overflowY: "auto", fontFamily: "monospace", fontSize: 12 }}>
+              {[1,2,3,4,5].map(i => (
+                <Box key={i}>[info] {new Date().toISOString()} - predict(project{i}) ➜ risk= {Math.random()>0.5?"HIGH":"LOW"}</Box>
+              ))}
+            </Box>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={4} sx={{ p: 2, borderRadius: 2, height: "100%" }}>
+            <Typography variant="h6" mb={1}>Variables d’importance (SHAP simulé)</Typography>
+            <Box sx={{ height: 220 }}>
+              <ResponsiveBar
+                data={[{feature:"budget_var", val: 0.42},{feature:"delai_var", val:0.33},{feature:"complexite", val:0.22}]}
+                keys={["val"]}
+                indexBy="feature"
+                margin={{ top: 20, right: 20, bottom: 40, left: 40 }}
+                padding={0.3}
+                colors={{ scheme: "nivo" }}
+                axisBottom={{ tickRotation: -20 }}
+              />
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
 
       <Grid container spacing={3}>
         {projets.map((projet, idx) => {
@@ -145,6 +175,24 @@ const DeveloperDashboard = () => {
             </Grid>
           );
         })}
+      </Grid>
+
+      <Grid container spacing={3} sx={{ mt: 2 }}>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={4} sx={{ p:2, borderRadius: 2 }}>
+            <Typography variant="h6" mb={1}>Évaluation du modèle (mock)</Typography>
+            <Typography>Precision: 0.87 | Recall: 0.78 | ROC-AUC: 0.91</Typography>
+            <Typography variant="body2" color="text.secondary">Comparaison v1.2 vs v1.3: +2% AUC</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper elevation={4} sx={{ p:2, borderRadius: 2 }}>
+            <Typography variant="h6" mb={1}>Exports datasets</Typography>
+            <Box display="flex" gap={1}>
+              <a href={`data:text/csv;charset=utf-8,${encodeURIComponent("col1,col2\n1,2\n3,4")}`} download="dataset_sample.csv">Télécharger CSV</a>
+            </Box>
+          </Paper>
+        </Grid>
       </Grid>
     </Box>
   );

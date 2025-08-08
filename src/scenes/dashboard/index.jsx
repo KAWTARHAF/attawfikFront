@@ -1,19 +1,11 @@
-import { Box, Button, IconButton, Typography, useTheme, Paper } from "@mui/material";
+import { Box, Button, Typography, useTheme, Paper, Table, TableHead, TableBody, TableRow, TableCell, TextField, Select, MenuItem, Grid, Stack, Divider } from "@mui/material";
 import { tokens } from "../../theme";
-import { mockTransactions } from "../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
-import EmailIcon from "@mui/icons-material/Email";
-import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import TrafficIcon from "@mui/icons-material/Traffic";
 import SecurityIcon from "@mui/icons-material/Security";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import Header from "../../components/Header";
-import LineChart from "../../components/LineChart";
-import GeographyChart from "../../components/GeographyChart";
-import BarChart from "../../components/BarChart";
-import StatBox from "../../components/StatBox";
-import ProgressCircle from "../../components/ProgressCircle";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
@@ -22,7 +14,7 @@ const Dashboard = () => {
   const navigate = useNavigate(); // ⬅️ INITIALISATION
 
   // Rôle actuel (depuis connexion)
-  const userRole = JSON.parse(localStorage.getItem("user"))?.role || "guest";
+  const userRole = JSON.parse(localStorage.getItem("user") || "null")?.role || "guest";
 
   // Simulation de projets IA pour validation
   const projetsIA = [
@@ -30,7 +22,16 @@ const Dashboard = () => {
     { id: 2, nom: "Projet Beta", retard: "Non", depassement: "Oui" },
   ];
 
-  
+  const atRiskCount = projetsIA.filter(p => p.retard === "Oui" || p.depassement === "Oui").length;
+  const loginHistory = JSON.parse(localStorage.getItem('loginHistory')||'[]');
+  const lastRetraining = (() => {
+    const r = JSON.parse(localStorage.getItem('retrainingHistory')||'[]');
+    return r.length ? r[r.length-1].date : 'N/A';
+  })();
+  const usersMock = [
+    { email: "admin@demo.com", role: "admin" },
+    { email: "manager@demo.com", role: "manager" },
+  ];
 
   return (
     <Box m="20px">
@@ -53,219 +54,113 @@ const Dashboard = () => {
         </Box>
       </Box>
 
-      {/* GRID & CHARTS */}
-      <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gridAutoRows="140px" gap="20px">
+      {/* Organisation claire de l'espace Admin */}
+      <Grid container spacing={2}>
+        {/* KPIs */}
+        <Grid item xs={12} md={3}>
+          <Paper sx={{ p:2, bgcolor: colors.primary[400], borderRadius:2 }}>
+            <Typography variant="body2" color={colors.grey[300]}>Utilisateurs</Typography>
+            <Typography variant="h4">{usersMock.length}</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Paper sx={{ p:2, bgcolor: colors.primary[400], borderRadius:2 }}>
+            <Typography variant="body2" color={colors.grey[300]}>Projets à risque</Typography>
+            <Typography variant="h4" color={atRiskCount?"error.main":"success.main"}>{atRiskCount}</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Paper sx={{ p:2, bgcolor: colors.primary[400], borderRadius:2 }}>
+            <Typography variant="body2" color={colors.grey[300]}>Connexions récentes</Typography>
+            <Typography variant="h4">{loginHistory.length}</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Paper sx={{ p:2, bgcolor: colors.primary[400], borderRadius:2 }}>
+            <Typography variant="body2" color={colors.grey[300]}>Dernier réentraînement</Typography>
+            <Typography variant="body2">{lastRetraining}</Typography>
+          </Paper>
+        </Grid>
 
-      
-
-        {/* Graphique revenus */}
-        <Box gridColumn="span 8" gridRow="span 2" bgcolor={colors.primary[400]}>
-          <Box mt="25px" p="0 30px" display="flex" justifyContent="space-between" alignItems="center">
-            <Box>
-              <Typography variant="h5" fontWeight="600" color={colors.grey[100]}>
-                Revenus générés
-              </Typography>
-              <Typography variant="h3" fontWeight="bold" color={colors.greenAccent[500]}>
-                $59,342.32
-              </Typography>
+        {/* Actions rapides */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p:2, bgcolor: colors.primary[400], borderRadius:2, height: '100%' }}>
+            <Box display="flex" alignItems="center" gap={1} mb={1}>
+              <AdminPanelSettingsIcon />
+              <Typography variant="h6">Gestion des droits</Typography>
             </Box>
-            <IconButton>
-              <DownloadOutlinedIcon sx={{ fontSize: "26px", color: colors.greenAccent[500] }} />
-            </IconButton>
-          </Box>
-          <Box height="250px">
-            <LineChart isDashboard={true} />
-          </Box>
-        </Box>
+            <Typography variant="body2" color={colors.grey[300]}>
+              Ajouter/supprimer des accès, modifier rôles
+            </Typography>
+            <Box mt={2}><Button variant="contained" onClick={()=>navigate('./accessManagement')}>Ouvrir</Button></Box>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper id="params" sx={{ p:2, bgcolor: colors.primary[400], borderRadius:2, height: '100%' }}>
+            <Box display="flex" alignItems="center" gap={1} mb={1}>
+              <SettingsOutlinedIcon />
+              <Typography variant="h6">Paramètres système</Typography>
+            </Box>
+            <Typography variant="body2" color={colors.grey[300]}>
+              Modèle, seuil de risque, réentraînement
+            </Typography>
+          </Paper>
+        </Grid>
 
-{/* Gestion des droits */}
-<Box
-  gridColumn="span 6"
-  gridRow="span 2"
-  bgcolor={colors.primary[400]}
-  p="20px"
-  borderRadius="12px"
-  boxShadow={3}
-  display="flex"
-  alignItems="center"
-  justifyContent="center"
-  minHeight="300px" // 🔹 hauteur minimale
->
-  <Paper
-    elevation={4}
-    sx={{
-      p: 3,
-      bgcolor: colors.primary[500],
-      borderRadius: 3,
-      textAlign: "center",
-      width: "100%",
-    }}
-  >
-    <Typography
-      variant="h5"
-      fontWeight="bold"
-      mb={2}
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      color={colors.grey[100]}
-    >
-      <SecurityIcon sx={{ mr: 1, color: colors.greenAccent[500], fontSize: 28 }} />
-      Gestion des droits d’accès
-    </Typography>
+        {/* Validation IA */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p:2, bgcolor: colors.primary[400], borderRadius:2 }}>
+            <Typography variant="h6" mb={1}>Validation des prédictions IA</Typography>
+            <Box sx={{ maxHeight: 220, overflowY: 'auto', pr:1 }}>
+              {projetsIA.map((p)=> (
+                <Paper key={p.id} sx={{ p:1.5, mb:1, bgcolor: colors.primary[600], borderRadius:1 }}>
+                  <Typography variant="subtitle2" color={colors.greenAccent[400]} fontWeight="bold">{p.nom}</Typography>
+                  <Typography variant="caption" color={colors.grey[300]}>Retard: {p.retard} | Dépassement: {p.depassement}</Typography>
+                  <Box display="flex" gap={0.5} mt={0.5}>
+                    <Button size="small" variant="outlined">Valider</Button>
+                    <Button size="small" variant="outlined">Corriger</Button>
+                    <Button size="small" variant="outlined" color="error">Annuler</Button>
+                  </Box>
+                </Paper>
+              ))}
+            </Box>
+          </Paper>
+        </Grid>
+        {/* Historique connexions */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p:2, bgcolor: colors.primary[400], borderRadius:2 }}>
+            <Typography variant="h6" mb={1}>Historique des connexions</Typography>
+            <Box sx={{ maxHeight: 220, overflowY: 'auto', fontFamily: 'monospace', fontSize: 12 }}>
+              {loginHistory.slice(-20).reverse().map((e,i)=> (
+                <Box key={i}>{e.date} — {e.email} ({e.role})</Box>
+              ))}
+            </Box>
+          </Paper>
+        </Grid>
 
-    <Typography variant="body1" color={colors.grey[200]} mb={3}>
-      Gérer les rôles des utilisateurs, ajouter ou supprimer des accès.
-    </Typography>
+        {/* Paramètres système */}
+        <Grid item xs={12}>
+          <Paper sx={{ p:2, bgcolor: colors.primary[400], borderRadius:2 }}>
+            <Typography variant="h6" mb={1}>Paramètres système</Typography>
+            <Stack direction={{ xs: 'column', md: 'row' }} spacing={1}>
+              <Select size="small" defaultValue={localStorage.getItem('modelType')||'xgboost'} onChange={(e)=>localStorage.setItem('modelType', e.target.value)}>
+                <MenuItem value="xgboost">XGBoost</MenuItem>
+                <MenuItem value="random_forest">RandomForest</MenuItem>
+                <MenuItem value="nn">NeuralNet</MenuItem>
+              </Select>
+              <TextField size="small" type="number" label="Seuil risque" defaultValue={localStorage.getItem('riskThreshold')||0.5}
+                onBlur={(e)=>localStorage.setItem('riskThreshold', e.target.value)} />
+              <Button variant="outlined" onClick={()=>{
+                const prev = JSON.parse(localStorage.getItem('retrainingHistory')||'[]');
+                prev.push({ date: new Date().toISOString(), by: 'admin' });
+                localStorage.setItem('retrainingHistory', JSON.stringify(prev));
+              }}>Réentraîner</Button>
+            </Stack>
+          </Paper>
+        </Grid>
+      </Grid>
 
-    <Button
-      variant="contained"
-      startIcon={<SecurityIcon />}
-      sx={{
-        backgroundColor: colors.greenAccent[600],
-        "&:hover": { backgroundColor: colors.greenAccent[700] },
-        fontWeight: "bold",
-      }}
-      onClick={() => navigate("./accessManagement")}
-    >
-      Aller à la gestion des droits
-    </Button>
-  </Paper>
-</Box>
-
-{/* Validation IA */}
-<Box
-  gridColumn="span 6"
-  gridRow="span 2"
-  bgcolor={colors.primary[400]}
-  p="20px"
-  borderRadius="12px"
-  boxShadow={3}
->
-  <Paper
-    elevation={4}
-    sx={{
-      p: 2,
-      bgcolor: colors.primary[500],
-      borderRadius: 3,
-      display: "flex",
-      flexDirection: "column",
-      height: "100%",
-    }}
-  >
-    <Typography
-      variant="h6"
-      fontWeight="bold"
-      mb={2}
-      display="flex"
-      alignItems="center"
-      color={colors.grey[100]}
-    >
-      <CheckCircleIcon sx={{ mr: 1, color: colors.greenAccent[500], fontSize: 24 }} />
-      Validation des prédictions IA
-    </Typography>
-
-    {/* Conteneur scrollable */}
-    <Box
-      sx={{
-        flexGrow: 1,
-        overflowY: "auto",
-        maxHeight: "200px", // 🔹 limite la hauteur visible
-        pr: 1, // petit padding à droite pour éviter que le scroll colle
-      }}
-    >
-      {projetsIA.map((p) => (
-        <Paper
-          key={p.id}
-          elevation={1}
-          sx={{
-            p: 1.5,
-            bgcolor: colors.primary[600],
-            borderRadius: 2,
-            mb: 1,
-          }}
-        >
-          <Typography
-            variant="subtitle2"
-            color={colors.greenAccent[400]}
-            fontWeight="bold"
-          >
-            {p.nom}
-          </Typography>
-          <Typography variant="caption" color={colors.grey[300]}>
-            Retard : {p.retard} | Dépassement : {p.depassement}
-          </Typography>
-
-          <Box display="flex" gap={0.5} mt={0.5}>
-            <Button
-              variant="outlined"
-              size="small"
-              sx={{
-                fontSize: "0.7rem",
-                borderColor: colors.greenAccent[500],
-                color: colors.greenAccent[500],
-                "&:hover": {
-                  backgroundColor: colors.greenAccent[600],
-                  color: colors.grey[900],
-                },
-              }}
-            >
-              Valider
-            </Button>
-            <Button
-              variant="outlined"
-              size="small"
-              sx={{
-                fontSize: "0.7rem",
-                borderColor: colors.blueAccent[500],
-                color: colors.blueAccent[500],
-                "&:hover": {
-                  backgroundColor: colors.blueAccent[600],
-                  color: colors.grey[900],
-                },
-              }}
-            >
-              Corriger
-            </Button>
-            <Button
-              variant="outlined"
-              size="small"
-              sx={{
-                fontSize: "0.7rem",
-                borderColor: colors.redAccent[500],
-                color: colors.redAccent[500],
-                "&:hover": {
-                  backgroundColor: colors.redAccent[600],
-                  color: colors.grey[900],
-                },
-              }}
-            >
-              Annuler
-            </Button>
-          </Box>
-        </Paper>
-      ))}
-    </Box>
-  </Paper>
-</Box>
-
-        {/* Graphiques divers */}
-        <Box gridColumn="span 4" gridRow="span 2" bgcolor={colors.primary[400]} p="30px">
-          <Typography variant="h5" fontWeight="600">Campagne</Typography>
-          <Box display="flex" flexDirection="column" alignItems="center" mt="25px">
-            <ProgressCircle size="125" />
-            <Typography variant="h5" color={colors.greenAccent[500]} sx={{ mt: "15px" }}>$48,352 générés</Typography>
-          </Box>
-        </Box>
-        <Box gridColumn="span 4" gridRow="span 2" bgcolor={colors.primary[400]}>
-          <Typography variant="h5" fontWeight="600" sx={{ padding: "30px 30px 0 30px" }}>Quantité des ventes</Typography>
-          <Box height="250px" mt="-20px"><BarChart isDashboard={true} /></Box>
-        </Box>
-        <Box gridColumn="span 4" gridRow="span 2" bgcolor={colors.primary[400]} p="30px">
-          <Typography variant="h5" fontWeight="600" sx={{ marginBottom: "15px" }}>Trafic par région</Typography>
-          <Box height="200px"><GeographyChart isDashboard={true} /></Box>
-        </Box>
-      </Box>
+      {/* Section gestion utilisateurs supprimée comme demandé */}
     </Box>
   );
 };

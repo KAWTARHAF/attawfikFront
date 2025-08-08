@@ -50,15 +50,15 @@ export const tokens = (mode) => ({
           900: "#2c100f",
         },
         blueAccent: {
-          100: "#afd9e4",  // Remplacé ici
-          200: "#afd9e4",
-          300: "#afd9e4",
-          400: "#afd9e4",
-          500: "#afd9e4",
-          600: "#afd9e4",
-          700: "#afd9e4",
-          800: "#afd9e4",
-          900: "#afd9e4",
+          100: "#b3e5fc",
+          200: "#81d4fa",
+          300: "#4fc3f7",
+          400: "#29b6f6",
+          500: "#03a9f4",
+          600: "#039be5",
+          700: "#0288d1",
+          800: "#0277bd",
+          900: "#01579b",
         },
       }
     : {
@@ -107,15 +107,15 @@ export const tokens = (mode) => ({
           900: "#f8dcdb",
         },
         blueAccent: {
-           100: "#afd9e4",  // Remplacé ici
-          200: "#afd9e4",
-          300: "#afd9e4",
-          400: "#afd9e4",
-          500: "#afd9e4",
-          600: "#afd9e4",
-          700: "#afd9e4",
-          800: "#afd9e4",
-          900: "#afd9e4",
+          100: "#e1f5fe",
+          200: "#b3e5fc",
+          300: "#81d4fa",
+          400: "#4fc3f7",
+          500: "#29b6f6",
+          600: "#03a9f4",
+          700: "#039be5",
+          800: "#0288d1",
+          900: "#0277bd",
         },
       }),
 });
@@ -164,30 +164,30 @@ export const themeSettings = (mode) => {
           }),
     },
     typography: {
-      fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
-      fontSize: 12,
+      fontFamily: ["Source Sans Pro", "Inter", "system-ui", "sans-serif"].join(","),
+      fontSize: 13,
       h1: {
-        fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
+        fontFamily: ["Source Sans Pro", "Inter", "system-ui", "sans-serif"].join(","),
         fontSize: 40,
       },
       h2: {
-        fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
+        fontFamily: ["Source Sans Pro", "Inter", "system-ui", "sans-serif"].join(","),
         fontSize: 32,
       },
       h3: {
-        fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
+        fontFamily: ["Source Sans Pro", "Inter", "system-ui", "sans-serif"].join(","),
         fontSize: 24,
       },
       h4: {
-        fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
+        fontFamily: ["Source Sans Pro", "Inter", "system-ui", "sans-serif"].join(","),
         fontSize: 20,
       },
       h5: {
-        fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
+        fontFamily: ["Source Sans Pro", "Inter", "system-ui", "sans-serif"].join(","),
         fontSize: 16,
       },
       h6: {
-        fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
+        fontFamily: ["Source Sans Pro", "Inter", "system-ui", "sans-serif"].join(","),
         fontSize: 14,
       },
     },

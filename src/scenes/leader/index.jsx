@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Box,
   Typography,
@@ -35,6 +35,12 @@ const LeaderDashboard = () => {
   };
 
   const [serviceChoisi, setServiceChoisi] = useState("Service Informatique");
+  const kpis = useMemo(() => {
+    const list = dataServices[serviceChoisi] || [];
+    const avg = list.reduce((a,b)=>a+b.avancement,0) / Math.max(list.length,1);
+    const retardCount = list.filter(p=>p.enRetard).length;
+    return { avgAvancement: Math.round(avg), retardCount };
+  }, [serviceChoisi]);
 
   return (
     
@@ -67,6 +73,17 @@ const LeaderDashboard = () => {
       <Typography variant="h4" gutterBottom>
         Tableau de bord - Chef de Service
       </Typography>
+
+      <Box display="flex" gap={2} mb={2}>
+        <Paper sx={{ p:2, borderRadius:2 }}>
+          <Typography variant="body2">Délai moyen (avancement)</Typography>
+          <Typography variant="h4">{kpis.avgAvancement}%</Typography>
+        </Paper>
+        <Paper sx={{ p:2, borderRadius:2 }}>
+          <Typography variant="body2">Projets en retard</Typography>
+          <Typography variant="h4" color={kpis.retardCount?"error.main":"success.main"}>{kpis.retardCount}</Typography>
+        </Paper>
+      </Box>
 
       {/* Sélecteur de service */}
       <FormControl fullWidth sx={{ mb: 3 }}>
@@ -137,6 +154,11 @@ const LeaderDashboard = () => {
                   },
                 }}
               />
+
+              <Box mt={2}>
+                <Typography variant="body2" color="text.secondary">Recommandation IA (mock):
+                {" "}{projet.enRetard?"Allouer plus de ressources et replanifier les jalons":"Projet conforme, maintenir le rythme"}</Typography>
+              </Box>
             </Paper>
           </Grid>
         ))}

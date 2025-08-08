@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import {
   Box,
   Typography,
@@ -12,19 +12,26 @@ import {
   TableCell,
   TableBody,
   useTheme,
+  TextField,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { Assessment, Download } from "@mui/icons-material";
+import { saveAs } from "file-saver";
 
 const ManagerDashboard = () => {
   const theme = useTheme();
 
-  const projets = [
+  const allProjets = [
     {
       nom: "Projet Alpha",
       predictionIA: "Risque élevé de dépassement",
       risque: true,
       depassement: true,
       avancement: "65%",
+      service: "Informatique",
     },
     {
       nom: "Projet Beta",
@@ -32,11 +39,30 @@ const ManagerDashboard = () => {
       risque: false,
       depassement: false,
       avancement: "92%",
+      service: "Marketing",
     },
   ];
+  const services = ["Tous", "Informatique", "Marketing"];
+  const [serviceFiltre, setServiceFiltre] = useState("Tous");
+  const projets = useMemo(() => {
+    return serviceFiltre === "Tous"
+      ? allProjets
+      : allProjets.filter((p) => p.service === serviceFiltre);
+  }, [serviceFiltre]);
 
   const exportReport = () => {
-    alert("Rapport exporté (simulation) !");
+    const rows = projets.map((p) => ({
+      nom: p.nom,
+      service: p.service,
+      prediction: p.predictionIA,
+      risque: p.risque ? "Oui" : "Non",
+      depassement: p.depassement ? "Oui" : "Non",
+      avancement: p.avancement,
+    }));
+    const header = Object.keys(rows[0] || {}).join(",");
+    const csv = [header, ...rows.map((r) => Object.values(r).join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    saveAs(blob, `rapport_${serviceFiltre}.csv`);
   };
 
   return (
@@ -78,6 +104,36 @@ const ManagerDashboard = () => {
       </Box>
 
       <Grid container spacing={3}>
+        <Grid item xs={12} md={4}>
+          <FormControl fullWidth>
+            <InputLabel>Filtrer par service</InputLabel>
+            <Select value={serviceFiltre} label="Filtrer par service" onChange={(e) => setServiceFiltre(e.target.value)}>
+              {services.map((s) => (
+                <MenuItem key={s} value={s}>{s}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} md={8}>
+          <Paper elevation={3} sx={{ p: 2, display: "flex", gap: 2, justifyContent: "space-between" }}>
+            <Box>
+              <Typography variant="h6">% projets à risque</Typography>
+              <Typography variant="h4" color={projets.filter(p=>p.risque).length>0?"error.main":"success.main"}>
+                {((projets.filter((p) => p.risque).length / Math.max(projets.length,1)) * 100).toFixed(0)}%
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant="h6">Moy. dépassement</Typography>
+              <Typography variant="h4">{projets.filter(p=>p.depassement).length} proj.</Typography>
+            </Box>
+            <Box>
+              <Typography variant="h6">Tendance (approx.)</Typography>
+              <Typography variant="h4">↗ stable</Typography>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+      <Grid container spacing={3} sx={{ mt: 2 }}>
         {projets.map((projet, index) => (
           <Grid item xs={12} md={6} key={index}>
             <Paper elevation={4} sx={{ p: 3, borderRadius: 3 }}>
@@ -94,6 +150,8 @@ const ManagerDashboard = () => {
                   variant="outlined"
                 />
               </Typography>
+
+              <TextField fullWidth size="small" placeholder="Commentaire / feedback sur la prédiction" sx={{ mb: 2 }} />
 
               <Table size="small">
                 <TableHead>

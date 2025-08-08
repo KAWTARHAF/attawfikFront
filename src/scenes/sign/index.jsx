@@ -41,6 +41,14 @@ const SignIn = () => {
     if (user) {
       localStorage.setItem("isAuthenticated", "true");
       localStorage.setItem("role", role);
+      localStorage.setItem("user", JSON.stringify({ email: user.email, role }));
+
+      // Historique des connexions (localStorage)
+      try {
+        const prev = JSON.parse(localStorage.getItem("loginHistory") || "[]");
+        prev.push({ email: user.email, role, date: new Date().toISOString() });
+        localStorage.setItem("loginHistory", JSON.stringify(prev));
+      } catch (e) {}
 
       switch (role) {
         case "admin":
